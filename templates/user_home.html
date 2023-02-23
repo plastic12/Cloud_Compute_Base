@@ -1,0 +1,46 @@
+<html>
+<head>
+<script src="script/login_script.js"></script>
+<script src="script/tab.js"></script>
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+<nav>
+    <ul>
+        <li>{{g.user}}
+        <li><a href="{{ url_for('logout') }}">Log Out</a>
+    </ul>
+</nav>
+<body>
+    <div class="tab">
+        <button class="tablinks" onclick="clickHandle(event, 'UniApp')">UniApp</button>
+        <button class="tablinks" onclick="clickHandle(event, 'File')">File</button>
+    </div>
+    
+      <div id="UniApp" class="tabcontent">
+        <div class="flex-component2 column">
+          add field: 
+          <button type="button" onclick="addTextField()">+text</button>
+          <button type="button" onclick="addFuncField()">+function</button>
+          <button type="button" onclick="addNumberField()" >+number</button>
+          <button type="button" onclick="removeField()">remove </button>
+          <button type="button" onclick="removeAll()">remove all</button>
+          <button type="button" onclick="send()">Send</button>
+        </div>
+        <div id="container" class="flex-component column">input: </div>
+        <div id="result" class="flex-component column" >result: 
+        </div>
+        <p id="prompt"></p>
+      </div>
+    
+      <div id="File" class="tabcontent">
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <label for="myfile">Select a file:</label>
+            <input type="file" id="myfile" name="image" accept=".png,.jpg">
+            <input type="text" name="label">
+            <input type="submit">
+        </form>
+      </div>
+
+</body>
+</html>
