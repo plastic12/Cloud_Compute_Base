@@ -106,10 +106,3 @@ def interpreter(commands,username,cache):
             except:
                 raise Exception("Type Conversion error")
     return stack
-
-if __name__=="__main__":
-    data={}
-    data["commands"]=[("add",),("substract",),("unknown",)]
-    data["stack"]=[2,1,0]
-    result=interpreter(data)
-    print(result)
