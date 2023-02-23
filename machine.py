@@ -1,8 +1,5 @@
 import cv2 as cv
 import numpy as np
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
 
 
 
@@ -49,30 +46,17 @@ def toIm(stack,username,cache):
     imgByteArr = cv.imencode(encode, array)[1].tobytes()
     stack.append(ImBin(imgByteArr,encode))
     return
-def linspace(stack,username,cache):
-    p1=stack.pop()
-    p2=stack.pop()
-    stack.append(np.linspace(p1, p2, 200))
-    return
+
+
 def sin(stack,username,cache):
     stack.append(np.sin(stack.pop()/180*np.pi))
     return
 def cos(stack,username,cache):
     stack.append(np.cos(stack.pop()/180*np.pi))
     return
-def plot(stack,username,cache):
-    fig=Figure()
-    canvas=FigureCanvas(fig)
-    ax= fig.gca()
-    x = stack.pop()
-    y = stack.pop()
-    ax.plot(x, y)
-    #fig.tight_layout(pad=0)
-    #ax.margins(0)
-    fig.canvas.draw()
-    image_from_plot = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
-    image_from_plot = image_from_plot.reshape(fig.canvas.get_width_height()[::-1] + (3,))
-    stack.append(image_from_plot)
+
+
+
 
 def getChannel(img):
     if len(img.shape)==2:
@@ -88,10 +72,8 @@ funlibrary['multiply']=multiply
 funlibrary['invertIm']=invertIm
 funlibrary['blur']=blur
 funlibrary['toIm']=toIm
-funlibrary['linspace']=linspace
 funlibrary['sin']=sin
 funlibrary['cos']=cos
-funlibrary['plot']=plot
 
 
 
@@ -107,8 +89,8 @@ def interpreter(commands,username,cache):
             if fun.startswith("<-"):
                 name=command[2:-5]
                 cache.addItem(username,name,stack.pop())
-            elif not funlibary.get(fun) is None:
-                funlibary.get(fun)(stack,username,cache)
+            elif not funlibrary.get(fun) is None:
+                funlibrary.get(fun)(stack,username,cache)
         elif command.endswith("::str"):
             if command.startswith("$"):
                 command=command[1:-5]

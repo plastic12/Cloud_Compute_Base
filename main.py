@@ -1,18 +1,16 @@
 from flask import (
     Flask, session, abort, url_for, render_template,g,flash,request,redirect,Response
 )
-import machine
 import json
-import io
 import cv2 as cv
 import numpy as np
 import machine as m
+import configparser
 
 class CacheClass:
 
     def __init__(self):
         self.container={}
-    
     def addUser(self,username):
         if self.container.get(username) is None:
             self.container[username]={}
@@ -29,8 +27,10 @@ class CacheClass:
         
 cache = CacheClass()
 app=Flask(__name__)
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-valid_user={"plastic12","cherry","leaf","firefly"}
+config=configparser.ConfigParser()
+config.read("config.ini")
+app.secret_key = config['DEFAULT']['secret_key']
+valid_user=config['DEFAULT']['valid_user']
 temp={}
 tempcounter=0
 
@@ -51,7 +51,7 @@ def index():
     if request.method=="POST":
         if request.is_json:
             obj=request.get_json()
-            stack=machine.interpreter(obj,g.user,cache)
+            stack=m.interpreter(obj,g.user,cache)
             #filter image out
             result=[]
             while len(stack)!=0:
