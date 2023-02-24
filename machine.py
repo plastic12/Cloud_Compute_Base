@@ -55,6 +55,9 @@ def cos(stack,username,cache):
     stack.append(np.cos(stack.pop()/180*np.pi))
     return
 
+def pop(stack,username,cache):
+    stack.pop()
+    return
 
 
 
@@ -74,13 +77,13 @@ funlibrary['blur']=blur
 funlibrary['toIm']=toIm
 funlibrary['sin']=sin
 funlibrary['cos']=cos
+funlibrary['pop']=pop
 
 
 
 
 #function list
-def interpreter(commands,username,cache):
-    stack=[]
+def interpreter(stack,commands,username,cache):
     for command in commands:
         #separate command
         if command.endswith("::fun"):

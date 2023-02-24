@@ -11,6 +11,7 @@ class CacheClass:
 
     def __init__(self):
         self.container={}
+    
     def addUser(self,username):
         if self.container.get(username) is None:
             self.container[username]={}
@@ -18,7 +19,9 @@ class CacheClass:
         self.addUser(username)
         self.container[username][key]=value
     def getItem(self,username,key):
-        return self.container[username][key]
+        if self.container.get(username) is None:
+            self.container[username]={}
+        return self.container[username].get(key)
     def removeItem(self,username,key):
         self.container[username].pop(key)
     def removeUser(self,username):
@@ -34,43 +37,59 @@ valid_user=config['DEFAULT']['valid_user']
 temp={}
 tempcounter=0
 
+def is_valid_user(user):
+    if user is None:
+        return False
+    elif user not in valid_user:
+        return False
+    else:
+        return True
+
+def show_stack(stack):
+    global tempcounter
+    result=[]
+    for i in range(len(stack)):
+        obj=stack[i]
+        if isinstance(obj,m.ImBin):
+            temp[tempcounter]=obj
+            result.append("#"+str(tempcounter))
+            tempcounter=tempcounter+1
+        elif isinstance(obj,np.ndarray):
+            result.append(obj.tolist())
+        else:
+            result.append(obj)
+    return result
+
 @app.before_request
 def load_session():
     user_id=session.get('user')
-    if user_id is None:
-        g.user=None
-    elif user_id not in valid_user:
-        g.user=None
-    else:
+    if is_valid_user(user_id):
         g.user=user_id
+    else:
+        g.user=None
 
-#main process entry
-@app.route("/",methods=["GET","POST"])
+#html file
+@app.route("/",methods=["GET"])
 def index():
-    global tempcounter
-    if request.method=="POST":
-        if request.is_json:
-            obj=request.get_json()
-            stack=m.interpreter(obj,g.user,cache)
-            #filter image out
-            result=[]
-            while len(stack)!=0:
-                obj=stack.pop(0)
-                if isinstance(obj,m.ImBin):
-                    temp[tempcounter]=obj
-                    result.append("#"+str(tempcounter))
-                    tempcounter=tempcounter+1
-                elif isinstance(obj,np.ndarray):
-                    result.append(obj.tolist())
-                else:
-                    result.append(obj)
-            return json.dumps(result)
-        else:
-            return "You are not sending a json"
     if (g.user is None):
         return render_template("home.html")
     else:
         return render_template("user_home.html")
+
+# universal app entry
+@app.route("/UniApp",methods=['POST'])
+def uniapp():
+    if (g.user is None):
+        abort(401)
+
+    if request.is_json:
+        obj=request.get_json()
+        stack=m.interpreter([],obj,g.user,cache)
+        #filter image out
+        return show_stack(stack)
+    else:
+        return ("You are not sending a json",400)
+
 
 
 #file upload entry
@@ -82,6 +101,35 @@ def upload():
     img = cv.imdecode(np_array,cv.IMREAD_UNCHANGED)
     cache.addItem(g.user,request.form['label'],img)
     return redirect(url_for('index'))
+
+#ongoing mode
+@app.route("/ongoing",methods=['POST','GET'])
+def ongoing():
+    if (g.user is None):
+        abort(401)
+    global tempcounter
+    if request.method=="POST":
+        if request.is_json:
+            stack=cache.getItem(g.user,"stack")
+            if stack is None:
+                print("POST: stack is empty, initialize stack.")
+                stack=[]
+                cache.addItem(g.user,"stack",stack)
+            obj=request.get_json()
+            m.interpreter(stack,obj,g.user,cache)
+        #filter image out
+
+            return "Operation success"
+    elif request.method=="GET":
+        stack=cache.getItem(g.user,"stack")
+        
+        if stack is None:
+            print("GET: stack is empty, initialize stack.")
+            stack=[]
+            cache.addItem(g.user,"stack",stack)
+        return show_stack(stack)
+    else:
+        return ("You are not sending a json",400)
 
 #download script
 @app.route("/script/<file>",methods=["GET"])

@@ -15,22 +15,24 @@
     <div class="tab">
         <button class="tablinks" onclick="clickHandle(event, 'UniApp')">UniApp</button>
         <button class="tablinks" onclick="clickHandle(event, 'File')">File</button>
+        <button class="tablinks" onclick="clickHandle(event, 'ongoing')">ongoing</button>
+    </div>
     </div>
     
       <div id="UniApp" class="tabcontent">
         <div class="flex-component2 column">
           add field: 
-          <button type="button" onclick="addTextField()">+text</button>
-          <button type="button" onclick="addFuncField()">+function</button>
-          <button type="button" onclick="addNumberField()" >+number</button>
-          <button type="button" onclick="removeField()">remove </button>
-          <button type="button" onclick="removeAll()">remove all</button>
+          <button type="button" onclick="addTextField('container_un')">+text</button>
+          <button type="button" onclick="addFuncField('container_un')">+function</button>
+          <button type="button" onclick="addNumberField('container_un')" >+number</button>
+          <button type="button" onclick="removeField('container_un')">remove </button>
+          <button type="button" onclick="clearInput('container_un')">remove all</button>
           <button type="button" onclick="send()">Send</button>
         </div>
-        <div id="container" class="flex-component column">input: </div>
-        <div id="result" class="flex-component column" >result: 
+        <div id="container_un" class="flex-component column">input: </div>
+        <div id="result_un" class="flex-component column" >result: 
         </div>
-        <p id="prompt"></p>
+        <p id="prompt_un"></p>
       </div>
     
       <div id="File" class="tabcontent">
@@ -40,6 +42,21 @@
             <input type="text" name="label">
             <input type="submit">
         </form>
+      </div>
+      <div id="ongoing" class="tabcontent">
+        <div class="flex-component2 column">
+          add field: 
+          <button type="button" onclick="addTextField('container_on')">+text</button>
+          <button type="button" onclick="addFuncField('container_on')">+function</button>
+          <button type="button" onclick="addNumberField('container_on')" >+number</button>
+          <button type="button" onclick="removeField('container_on')">remove </button>
+          <button type="button" onclick="clearInput('container_on')">remove all</button>
+          <button type="button" onclick="ongoing()">Send</button>
+        </div>
+        <div id="container_on" class="flex-component column">input: </div>
+        <div id="result_on" class="flex-component column" >result: 
+        </div>
+        <p id="prompt_on"></p>
       </div>
 
 </body>
